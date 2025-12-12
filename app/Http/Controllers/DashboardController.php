@@ -23,7 +23,7 @@ final class DashboardController extends Controller
         if (! $user->currentWorkspace) {
             return to_route('dashboard')
                 ->with('toast', [
-                    'title' => 'No workspace selected',
+                    'title' => 'No workspace found. Please contact support or try logging out and back in.',
                     'type' => 'error',
                 ]);
         }

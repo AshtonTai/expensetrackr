@@ -29,7 +29,7 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
 
         // @phpstan-ignore offsetAccess.nonOffsetAccessible, property.nonObject, method.nonObject
-        $this->app['request']->server->set('HTTPS', 'on');
+        //        $this->app['request']->server->set('HTTPS', 'on');
 
         $this->app->singleton(Resend\Client::class, fn ($app): Resend\Client => Resend::client(type(config('services.resend.key'))->asString()));
 
