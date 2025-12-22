@@ -41,7 +41,8 @@ export function AccountDetailsDrawer() {
             const res = await fetch(routes.api.accounts.show.url({ public_id: actions.resourceId ?? "" }), {
                 credentials: "include",
             });
-            return (await res.json()) as Resources.Account;
+            const result = await res.json();
+            return (result as { data: Resources.Account }).data;
         },
         enabled: isOpen,
     });

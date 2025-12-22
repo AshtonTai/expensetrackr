@@ -42,9 +42,11 @@ export function CreateAccountDrawer() {
             initial_balance: "0.00",
         },
         onValidate({ formData }) {
+            console.log("Form data entries:", Array.from(formData.entries()));
             return parseWithValibot(formData, { schema: CreateAccountSchema });
         },
         onSubmit(event, { submission }) {
+            console.log("✅ Submitting account...", { event, submission });
             event.preventDefault();
 
             if (submission && "value" in submission) {
@@ -101,6 +103,7 @@ export function CreateAccountDrawer() {
                         <Drawer.Title className="text-label-lg text-(--text-strong-950)">
                             {t("accounts.create.title")}
                         </Drawer.Title>
+                        {/*<Drawer.Description className="sr-only">{t("accounts.create.description")}</Drawer.Description>*/}
                     </Drawer.Header>
 
                     <Divider.Root $type="solid-text">{t("accounts.create.information")}</Divider.Root>
@@ -200,11 +203,17 @@ export function CreateAccountDrawer() {
                                             value={currencyCodeControl.value}
                                         />
                                     }
-                                    name="initial_balance_currency_input"
+                                    // name="initial_balance_currency_input"
                                     onValueChange={(values) => initialBalanceControl.change(handleMoneyChange(values))}
                                     placeholder={t("accounts.form.initial_balance.placeholder")}
                                     value={initialBalanceControl.value}
                                     withCurrencySymbol={false}
+                                />
+
+                                <input
+                                    name={fields.currency_code.name}
+                                    type="hidden"
+                                    value={currencyCodeControl.value ?? "USD"}
                                 />
 
                                 {(fields.type.value === "credit_card" || fields.type.value === "loan") && (

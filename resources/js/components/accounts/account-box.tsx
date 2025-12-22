@@ -30,7 +30,18 @@ type CreditCardProps = {
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export function AccountBox({ account, className, ...rest }: CreditCardProps) {
-    const { t, language } = useTranslation();
+    const { t, language: lang } = useTranslation();
+    const language = lang as string;
+
+    //Ensure account has valid currency code
+    if (!account) {
+        throw new Error("AccountBox was called without an 'account' prop");
+    }
+
+    if (!account.currencyCode) {
+        throw new Error(`Account ${account.id ?? JSON.stringify(account)} is missing currencyCode`);
+    }
+
     const formatter = resolveCurrencyFormat(language, account.currencyCode);
 
     const format: Format = React.useMemo(
@@ -103,13 +114,18 @@ export function AccountBox({ account, className, ...rest }: CreditCardProps) {
             <div className="relative mt-auto flex flex-col gap-1">
                 <div className="flex flex-col gap-0.5">
                     <div className="line-clamp-1 space-x-1 text-h4">
-                        <NumberFlow format={format} value={new Decimal(account.currentBalance).toNumber()} />
+                        <NumberFlow
+                            className="text-paragraph-lg"
+                            format={format}
+                            value={new Decimal(account.currentBalance).toNumber()}
+                        />
                         <span className="text-paragraph-sm text-(--text-soft-400)">{account.currencyCode}</span>
                     </div>
 
                     {hasMultiCurrency && account.baseCurrentBalance && baseFormat && (
                         <div className="line-clamp-1 space-x-1 text-paragraph-sm text-(--text-sub-600)">
                             <NumberFlow
+                                className="text-paragraph-lg"
                                 format={baseFormat}
                                 value={new Decimal(account.baseCurrentBalance).toNumber()}
                             />
