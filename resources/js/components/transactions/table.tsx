@@ -226,7 +226,17 @@ export function TransactionsTable({ data: initialData, total }: TransactionsTabl
                     {table.getRowModel().rows?.length > 0 &&
                         table.getRowModel().rows.map((row, i, arr) => (
                             <React.Fragment key={row.id}>
-                                <Table.Row data-state={row.getIsSelected() && "selected"}>
+                                <Table.Row
+                                    className="cursor-pointer"
+                                    data-state={row.getIsSelected() && "selected"}
+                                    onClick={() =>
+                                        actions.setParams({
+                                            action: "read",
+                                            resource: "transactions",
+                                            resourceId: row.original.id,
+                                        })
+                                    }
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <Table.Cell
                                             className={cn(
