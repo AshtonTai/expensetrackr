@@ -1,6 +1,6 @@
 import { getCoreRowModel, useReactTable, type ColumnDef, flexRender } from "@tanstack/react-table";
 import * as React from "react";
-import MoreVerticalIcon from "virtual:icons/hugeicons/more-vertical";
+// import MoreVerticalIcon from "virtual:icons/hugeicons/more-vertical";
 
 import { CategoryIcon } from "#/components/category-icon.tsx";
 import { Image } from "#/components/image.tsx";
@@ -170,7 +170,7 @@ export function TransactionsTable({ data: initialData, total }: TransactionsTabl
                                 })
                             }
                         >
-                            <Button.Icon as={MoreVerticalIcon} className="size-6" />
+                            {/*<Button.Icon as={MoreVerticalIcon} className="size-6" />*/}
                         </Button.Root>
                     );
                 },

@@ -55,7 +55,7 @@ final class DashboardController extends Controller
         };
 
         // Get spending by category for the selected period (expenses only)
-        $transactions = $user->currentWorkspace
+        $spendingTransactions = $user->currentWorkspace
             ->transactions()
             ->with('category')
             ->where('type', TransactionType::Expense)
@@ -63,8 +63,8 @@ final class DashboardController extends Controller
             ->where('dated_at', '<=', $spendingByCategoryParams->endDate)
             ->get();
 
-        $grouped = $transactions->groupBy('category.name');
-        $totalSpending = abs($transactions->sum('amount'));
+        $grouped = $spendingTransactions->groupBy('category.name');
+        $totalSpending = abs($spendingTransactions->sum('amount'));
 
         $spendingByCategory = $grouped
             ->map(function ($categoryTransactions, $categoryName) use ($totalSpending): array {
@@ -84,12 +84,54 @@ final class DashboardController extends Controller
             ->values()
             ->toArray();
 
+        // Gets Saving "
+        /** @var array{period: string} */
+        $savingByCategoryPeriod = $request->query('saving_by_category', [
+            'period' => 'last-month',
+        ]);
+        $savingByCategoryParams = match ($savingByCategoryPeriod['period']) {
+            'last-month' => Period::lastMonth(),
+            'last-6-months' => Period::last6Months(),
+            'last-year' => Period::lastYear(),
+            default => Period::lastMonth(),
+        };
+
+        $savingTransactions = $user->currentWorkspace
+            ->transactions()
+            ->with('category')
+            ->where('type', TransactionType::Income)
+            ->where('dated_at', '>=', $savingByCategoryParams->startDate)
+            ->where('dated_at', '<=', $savingByCategoryParams->endDate)
+            ->get();
+
+        $grouped = $savingTransactions->groupBy('category.name');
+        $totalSaving = ($savingTransactions->sum('amount'));
+
+        $savingByCategory = $grouped
+            ->map(function ($categoryTransactions, $categoryName) use ($totalSaving): array {
+                $categoryTotal = abs($categoryTransactions->sum('amount'));
+
+                return [
+                    'id' => $categoryTransactions->first()?->category?->slug ?? Str::slug($categoryName ?? 'uncategorized'),
+                    'name' => $categoryName ?? 'Uncategorized',
+                    'value' => $categoryTotal,
+                    'color' => $categoryTransactions->first()?->category?->color ?? '#8B5CF6',
+                    'percentage' => $totalSaving > 0
+                        ? round(($categoryTotal / $totalSaving) * 100, 1)
+                        : 0,
+                ];
+            })
+            ->sortByDesc('percentage')
+            ->values()
+            ->toArray();
+
         return Inertia::render('dashboard', [
             'netWorth' => $balanceSheet->netWorth(),
             'series' => [
                 'totalBalance' => $balanceSheet->netWorthSeries($totalBalanceParams['period'], $totalBalanceParams['interval']),
             ],
             'spendingByCategory' => $spendingByCategory,
+            'savingByCategory' => $savingByCategory,
             'transactions' => Transaction::with(['category', 'merchant'])
                 ->latest('dated_at')
                 ->take(5)

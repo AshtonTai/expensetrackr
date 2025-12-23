@@ -7,11 +7,13 @@ export function useDashboardParams() {
         {
             totalBalancePeriod: parseAsStringLiteral(totalBalancePeriods).withDefault("last-month"),
             spendingByCategoryPeriod: parseAsStringLiteral(totalBalancePeriods).withDefault("last-month"),
+            savingByCategoryPeriod: parseAsStringLiteral(totalBalancePeriods).withDefault("last-month"),
         },
         {
             urlKeys: {
                 totalBalancePeriod: "total_balance[period]",
                 spendingByCategoryPeriod: "spending_by_category[period]",
+                savingByCategoryPeriod: "saving_by_category[period]",
             },
         },
     );

@@ -7,6 +7,7 @@ import { Header } from "#/components/page-header.tsx";
 import * as Avatar from "#/components/ui/avatar.tsx";
 import * as Button from "#/components/ui/button.tsx";
 import * as Divider from "#/components/ui/divider.tsx";
+import { SavingByCategoryWidget } from "#/components/widgets/saving-by-category.tsx";
 import { SpendingByCategoryWidget } from "#/components/widgets/spending-by-category.tsx";
 import { TotalBalanceWidget } from "#/components/widgets/total-balance.tsx";
 import { TransactionsTableWidget } from "#/components/widgets/transactions-table-widget.tsx";
@@ -36,12 +37,21 @@ type SpendingByCategoryData = {
     percentage: number;
 };
 
+type SavingByCategoryData = {
+    id: string;
+    name: string;
+    value: Decimal.Value;
+    color: string;
+    percentage: number;
+};
+
 type DashboardProps = {
     netWorth: Decimal.Value;
     series: {
         totalBalance: NetWorthSeries;
     };
     spendingByCategory: SpendingByCategoryData[];
+    savingByCategory: SavingByCategoryData[];
     transactions: Resources.Transaction[];
     requestId: string;
 };
@@ -97,7 +107,13 @@ export default function Dashboard(props: PageProps<DashboardProps>) {
                 <div className="w-px bg-(--stroke-soft-200) lg:block" />
 
                 <div className="shrink-0 min-[1100px]:w-[328px]">
-                    <SpendingByCategoryWidget data={props.spendingByCategory} title="Spending by category" />
+                    <div>
+                        <SpendingByCategoryWidget data={props.spendingByCategory} title="Spending by category" />
+                    </div>
+                    <DashedDivider className="my-6 py-2.5" />
+                    <div>
+                        <SavingByCategoryWidget data={props.savingByCategory} title="Saving by category" />
+                    </div>
                 </div>
             </div>
         </>

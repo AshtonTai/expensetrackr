@@ -48,6 +48,8 @@ final class AccountPolicy
             return $user->accounts()->count() < 10;
         }
 
+        // Set to Two to test for Create Account
+        // return $user->accounts()->count() < 2;
         return $user->accounts()->count() < 1;
     }
 

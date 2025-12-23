@@ -38,19 +38,19 @@ export function TransactionsTableWidget({
             )}
             {...props}
         >
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <div className="flex flex-1 items-center gap-3">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-3">
+                <div className="flex flex-1 gap-3">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--bg-white-0) shadow-xs ring-1 ring-(--stroke-soft-200) ring-inset">
                         <TransactionIcon className="size-5 text-(--text-sub-600)" />
                     </div>
-                    <div>
+                    <div className="space-y-1">
                         <div className="text-label-sm">Recent Transactions</div>
                         <div className="mt-1 text-paragraph-xs text-(--text-sub-600)">
                             Display the recent transactions in the table below.
                         </div>
                     </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                     <Input.Root $size="sm" className="max-w-lg lg:w-[300px]">
                         <Input.Wrapper>
                             <Input.Icon as={Search01Icon} />
@@ -60,7 +60,7 @@ export function TransactionsTableWidget({
                             </Kbd.Root>
                         </Input.Wrapper>
                     </Input.Root>
-                    <Button.Root $size="sm" $style="stroke" $type="neutral" asChild>
+                    <Button.Root $size="sm" $style="stroke" $type="neutral" asChild className="w-full md:w-auto">
                         <Link href={routes.transactions.index.url()}>See All</Link>
                     </Button.Root>
                 </div>

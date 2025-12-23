@@ -12,7 +12,7 @@ import { LegendDot } from "../legend-dot.tsx";
 import PieChart from "../pie-chart.tsx";
 import * as Select from "../ui/select.tsx";
 
-type SpendingByCategoryData = {
+type SavingByCategoryData = {
     id: string;
     name: string;
     value: Decimal.Value;
@@ -20,14 +20,14 @@ type SpendingByCategoryData = {
     percentage: number;
 };
 
-type SpendingByCategoryWidgetProps = React.HTMLAttributes<HTMLDivElement> & {
+type SavingByCategoryWidgetProps = React.HTMLAttributes<HTMLDivElement> & {
     title: string;
-    data: SpendingByCategoryData[];
+    data: SavingByCategoryData[];
 };
 
-export function SpendingByCategoryWidget({ title, data, className, ...rest }: SpendingByCategoryWidgetProps) {
+export function SavingByCategoryWidget({ title, data, className, ...rest }: SavingByCategoryWidgetProps) {
     const { t, language } = useTranslation();
-    const { spendingByCategoryPeriod, setParams } = useDashboardParams();
+    const { savingByCategoryPeriod, setParams } = useDashboardParams();
 
     return (
         <div className={cn("w-full", className)} {...rest}>
@@ -39,8 +39,8 @@ export function SpendingByCategoryWidget({ title, data, className, ...rest }: Sp
                 <Select.Root
                     $size="xs"
                     $variant="compact"
-                    onValueChange={(value) => setParams({ spendingByCategoryPeriod: value }, { shallow: false })}
-                    value={spendingByCategoryPeriod}
+                    onValueChange={(value) => setParams({ savingByCategoryPeriod: value }, { shallow: false })}
+                    value={savingByCategoryPeriod}
                 >
                     <SelectPrimitives.Trigger asChild>
                         <Button
@@ -101,9 +101,9 @@ export function SpendingByCategoryWidget({ title, data, className, ...rest }: Sp
                         ) : (
                             <div className="flex items-center justify-center py-8">
                                 <div className="text-center">
-                                    <div className="text-paragraph-sm text-(--text-sub-600)">No spending data</div>
+                                    <div className="text-paragraph-sm text-(--text-sub-600)">No saving data</div>
                                     <div className="mt-1 text-paragraph-xs text-(--text-soft-400)">
-                                        No expenses found for the selected period
+                                        No invome found for the selected period
                                     </div>
                                 </div>
                             </div>
