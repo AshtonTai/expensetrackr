@@ -22,6 +22,7 @@ type CategoryCardProps = {
 };
 
 export function CategoryCard({ category, categories, isChild = false }: CategoryCardProps) {
+    // console.log("Rendering category:", category.name, "Children:", category.children);
     const actions = useActionsParams();
 
     const handleUpdateClick = async () => {
@@ -59,7 +60,7 @@ export function CategoryCard({ category, categories, isChild = false }: Category
                         }
                     >
                         <CategoryIcon
-                            category={category.slug}
+                            category={category.icon}
                             className="size-5 text-(--color-category-color)"
                             style={
                                 {

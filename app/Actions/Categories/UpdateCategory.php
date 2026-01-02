@@ -19,6 +19,7 @@ final class UpdateCategory
             'name' => $input['name'],
             'color' => $input['color'],
             'description' => $input['description'],
+            'icon' => $input['icon'] ?? null,
             'classification' => $input['classification'],
             'parent_id' => $input['parent_id'] ? Category::wherePublicId($input['parent_id'])->first()?->id : null,
         ])->save();

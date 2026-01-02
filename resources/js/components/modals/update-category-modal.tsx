@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { toast } from "sonner";
 import { parse } from "valibot";
@@ -8,6 +8,7 @@ import { Button } from "#/components/button.tsx";
 import { classificationIcons } from "#/components/category-classification-icon.tsx";
 import { categoryIcons } from "#/components/category-icon.tsx";
 import { ColorField } from "#/components/ui/form/color.tsx";
+import { IconSelectField } from "#/components/ui/form/IconSelectField.tsx";
 import { SelectField } from "#/components/ui/form/select-field.tsx";
 import { TextField } from "#/components/ui/form/text-field.tsx";
 import { Textarea } from "#/components/ui/form/textarea.tsx";
@@ -19,6 +20,7 @@ import { type PaginatedResponse } from "#/types/pagination.ts";
 import { SubmitButton } from "../submit-button.tsx";
 
 export function UpdateCategoryModal() {
+    const queryClient = useQueryClient();
     const actions = useActionsParams();
     const isOpen = actions.action === "update" && actions.resource === "categories" && !!actions.resourceId;
     const [{ data: category, isLoading: isCategoryLoading }, { data: categories, isLoading: isCategoriesLoading }] =
@@ -63,6 +65,7 @@ export function UpdateCategoryModal() {
         name: category?.name,
         color: category?.color,
         description: category?.description || "",
+        icon: category?.icon || "",
         classification: category?.classification as App.Enums.Finance.CategoryClassification,
         parentId: category?.parentId,
     });
@@ -76,6 +79,7 @@ export function UpdateCategoryModal() {
                 name: category.name,
                 color: category.color,
                 description: category.description || "",
+                icon: category.icon || "",
                 classification: category.classification as App.Enums.Finance.CategoryClassification,
                 parentId: category.parentId,
             });
@@ -103,6 +107,8 @@ export function UpdateCategoryModal() {
                 preserveScroll: true,
                 async onSuccess() {
                     await actions.resetParams();
+                    await queryClient.invalidateQueries({ queryKey: ["categories"] });
+                    await queryClient.invalidateQueries({ queryKey: ["category", category.id] });
                 },
                 onError() {
                     if (category) {
@@ -110,6 +116,7 @@ export function UpdateCategoryModal() {
                             name: category.name,
                             color: category.color,
                             description: category.description || "",
+                            icon: category.icon || "",
                             classification: category.classification as App.Enums.Finance.CategoryClassification,
                             parentId: category.parentId,
                         });
@@ -204,6 +211,13 @@ export function UpdateCategoryModal() {
                             onChange={(e) => form.setData("description", e.target.value)}
                             placeholder={isLoading ? "Loading..." : "This category is for groceries"}
                             value={form.data.description}
+                        />
+
+                        <IconSelectField
+                            disabled={form.processing || isLoading}
+                            error={form.errors.icon}
+                            onValueChange={(value) => form.setData("icon", value)}
+                            value={form.data.icon}
                         />
 
                         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

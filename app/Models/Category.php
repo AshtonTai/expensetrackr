@@ -59,6 +59,19 @@ final class Category extends Model
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory, HasPrefixedId, WorkspaceOwned;
 
+    protected $fillable = [
+        'name',
+        'slug',
+        'color',
+        'description',
+        'classification',
+        'parent_id',
+        'icon',
+        'workspace_id',
+        'is_system',
+        'is_active',
+    ];
+
     /**
      * Get the route key for the model.
      *

@@ -27,6 +27,7 @@ final class CategoryResource extends JsonResource
             'slug' => $this->slug,
             'color' => $this->color,
             'description' => $this->description,
+            'icon' => $this->icon,
             'isSystem' => $this->is_system,
             'classification' => $this->classification,
             'parentId' => $this->when($this->appendExtraFields, fn () => $this->parent->public_id ?? null),

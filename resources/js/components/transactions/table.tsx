@@ -59,7 +59,7 @@ export function TransactionsTable({ data: initialData, total }: TransactionsTabl
                                     }
                                 >
                                     <CategoryIcon
-                                        category={row.original.category.slug}
+                                        category={row.original.category.icon}
                                         className="size-5 text-(--color-category-color)"
                                         style={
                                             {

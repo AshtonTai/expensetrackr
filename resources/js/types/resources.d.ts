@@ -31,6 +31,7 @@ declare namespace Resources {
         slug: string;
         color: string;
         description?: string;
+        icon: string;
         isSystem: boolean;
         classification: App.Enums.CategoryClassification;
         parentId?: string;
@@ -87,6 +88,7 @@ declare namespace Resources {
             name: string;
             slug: string;
             color: string;
+            icon?: string;
         };
         account?: Account;
         merchant?: Merchant;

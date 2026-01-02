@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Enums\Finance\CategoryClassification;
+use App\Enums\Finance\CategoryIcons;
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\RedirectResponse;
@@ -32,11 +33,16 @@ final class UpdateCategoryRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'color' => ['required', 'hex_color'],
             'description' => ['nullable', 'string', 'max:255'],
+            'icon' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::in(CategoryIcons::casesAsValues())
+            ],
             'classification' => ['required', 'string', Rule::enum(CategoryClassification::class)],
             'parent_id' => [
                 'nullable',
                 'exists:categories,public_id',
-                'not_in:public_id',
                 function ($attribute, $value, callable $fail): void {
                     if ($value) {
                         // Get the current category being updated
