@@ -147,7 +147,7 @@ export default function PieChart({ data, className, circleSize }: PieChartProps)
                             (entry: any) => (
                                 <Cell
                                     className={cn(
-                                        "cursor-pointer stroke-(--stroke-white-0) transition-opacity hover:opacity-80",
+                                        "cursor stroke-(--stroke-white-0) transition-opacity hover:opacity-80",
                                     )}
                                     key={entry.id}
                                     style={{
