@@ -27,6 +27,7 @@ final class CategoryController extends Controller
     public function index(Request $request): Response
     {
         $categories = Category::query()
+            ->with('children')
             ->where(function ($query) use ($request): void {
                 $query->where('is_system', true)
                     ->orWhere(function (Builder $query) use ($request): void {

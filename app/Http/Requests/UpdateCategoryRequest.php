@@ -44,14 +44,35 @@ final class UpdateCategoryRequest extends FormRequest
                 'nullable',
                 'exists:categories,public_id',
                 function ($attribute, $value, callable $fail): void {
-                    if ($value) {
-                        // Get the current category being updated
-                        $category = Category::wherePublicId($this->route('category'))->first();
 
-                        // If this category has children, it cannot be assigned a parent
-                        if ($category && $category->children()->exists()) {
-                            $fail('Cannot assign a parent to this category because it already has children. Only two levels of nesting are allowed.');
-                        }
+                    if (! $value) {
+                        return;
+                    }
+
+                    $current = $this->route('category');
+                    $parent = Category::where('public_id', $value)->first();
+
+                    if (! $parent) {
+                        $fail('The selected parent category does not exist.');
+                        return;
+                    }
+
+
+                    // Prevent self-parenting
+                    if ($current && $current->public_id === $value) {
+                        $fail('A category cannot be its own parent.');
+                        return;
+                    }
+
+                    // Parent must be top-level
+                    if ($parent->parent_id !== null) {
+                        $fail('You can only select a top-level category as a parent.');
+                        return;
+                    }
+
+                    // Prevent assigning a parent if current already has children
+                    if ($current && $current->children()->exists()) {
+                        $fail('This category already has children and cannot be assigned a parent.');
                     }
                 },
             ],

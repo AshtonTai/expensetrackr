@@ -253,13 +253,13 @@ export function UpdateCategoryModal() {
                                 name="parentId"
                                 onValueChange={(value) => form.setData("parentId", value)}
                                 options={
-                                    groupedCategories?.[form.data.classification]?.map(
-                                        (category: Resources.Category) => ({
+                                    groupedCategories?.[form.data.classification]
+                                        ?.filter((category) => category.parentId === null)
+                                        .map((category) => ({
                                             value: category.id,
                                             label: category.name,
-                                            icon: categoryIcons[category.slug as keyof typeof categoryIcons],
-                                        }),
-                                    ) ?? []
+                                            icon: categoryIcons[category.icon as keyof typeof categoryIcons],
+                                        })) ?? []
                                 }
                                 placeholder={isLoading ? "Loading..." : "Select parent category"}
                                 value={form.data.parentId}

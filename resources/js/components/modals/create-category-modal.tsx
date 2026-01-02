@@ -169,11 +169,11 @@ export function CreateCategoryModal() {
                                 onValueChange={(value) => form.setData("parentId", value)}
                                 options={
                                     groupedCategories?.[form.data.classification]
-                                        ?.filter((category) => !category.children?.length)
-                                        ?.map((category) => ({
+                                        ?.filter((category) => category.parentId === null)
+                                        .map((category) => ({
                                             value: category.id,
                                             label: category.name,
-                                            icon: categoryIcons[category.slug as keyof typeof categoryIcons],
+                                            icon: categoryIcons[category.icon as keyof typeof categoryIcons],
                                         })) ?? []
                                 }
                                 value={form.data.parentId}

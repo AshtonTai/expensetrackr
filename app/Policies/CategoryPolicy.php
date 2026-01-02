@@ -33,7 +33,10 @@ final class CategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isSubscribed();
+        //This code allows people from the current workspace to create category
+        return $user->currentWorkspace->categories()->exists();
+        //Commenting this due to inability to apply billing
+        //  return $user->isSubscribed();
     }
 
     /**
@@ -41,7 +44,8 @@ final class CategoryPolicy
      */
     public function update(User $user, Category $category): bool
     {
-        return $category->workspace->is($user->currentWorkspace);
+
+        return ! $category->is_system && $category->workspace->is($user->currentWorkspace);
     }
 
     /**

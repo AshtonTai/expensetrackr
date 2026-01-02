@@ -30,13 +30,21 @@ final class CategoryResource extends JsonResource
             'icon' => $this->icon,
             'isSystem' => $this->is_system,
             'classification' => $this->classification,
-            'parentId' => $this->when($this->appendExtraFields, fn () => $this->parent->public_id ?? null),
+            'parentId' => $this->parent->public_id ?? null,
             'permissions' => $this->when($this->appendExtraFields, fn (): array => [
                 'canUpdate' => $request->user()?->can('update', $this->resource),
                 'canDelete' => $request->user()?->can('delete', $this->resource),
             ]),
             'hasParent' => $this->when($this->appendExtraFields, fn () => $this->parent()->exists()),
-            'children' => $this->whenLoaded('children', fn () => $this->children->map(fn (Category $category): CategoryResource => new CategoryResource($category))),
+            'children' => $this->whenLoaded('children', function () {
+                return $this->children->map(function (Category $child): CategoryResource {
+                    $resource = new CategoryResource($child);
+                    if ($this->appendExtraFields) {
+                        $resource->withExtraFields();
+                    }
+                    return $resource;
+                });
+            }),
         ];
     }
 

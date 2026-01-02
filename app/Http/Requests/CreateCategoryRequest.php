@@ -34,7 +34,12 @@ final class CreateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255',
+                Rule::unique('categories')->where(function ($query) {
+                    return $query
+                        ->where('workspace_id', request()->user()->current_workspace_id)
+                        ->where('classification', $this->get('classification'));
+                }),],
             'slug' => ['required', 'string', 'max:255', 'unique:categories,slug'],
             'color' => ['required', 'hex_color'],
             'description' => ['nullable', 'string', 'max:255'],
@@ -44,12 +49,25 @@ final class CreateCategoryRequest extends FormRequest
                 'nullable',
                 'exists:categories,public_id',
                 function ($attribute, $value, callable $fail): void {
-                    if ($value) {
-                        /** @var Category|null */
-                        $parent = Category::find($value)?->first();
-                        if ($parent?->children->count() > 0) {
-                            $fail('Cannot set a parent category that already has children. Only two levels of nesting are allowed.');
-                        }
+                    if (! $value) {
+                        return;
+                    }
+
+                    $parent = Category::where('public_id', $value)
+                        ->where(function ($query) {
+                            $query->where('workspace_id', request()->user()->current_workspace_id)
+                                ->orWhere('is_system', true);
+                        })
+                        ->first();
+
+                    if (! $parent) {
+                        $fail('The selected parent category does not exist.');
+                        return;
+                    }
+
+                    if ($parent->parent_id !== null) {
+                        $fail('You cannot create nested categories more than two levels deep.');
+                        return;
                     }
                 },
             ],
@@ -81,5 +99,12 @@ final class CreateCategoryRequest extends FormRequest
     protected function failedAuthorization(): RedirectResponse
     {
         return to_route('categories.index');
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.unique' => 'A category with this name already exists in the same classification.',
+        ];
     }
 }

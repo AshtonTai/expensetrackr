@@ -1,4 +1,5 @@
 import * as React from "react";
+import { toast } from "sonner";
 import ArrowMoveDownRightIcon from "virtual:icons/hugeicons/arrow-move-down-right";
 import Delete02Icon from "virtual:icons/hugeicons/delete-02";
 import Edit02Icon from "virtual:icons/hugeicons/edit-02";
@@ -90,28 +91,44 @@ export function CategoryCard({ category, categories, isChild = false }: Category
                             </Badge.Root>
                         ) : null}
 
-                        <Dropdown.Root>
-                            <Dropdown.Trigger asChild>
-                                <Button.Root $size="xs" $style="ghost" $type="neutral">
-                                    <Button.Icon as={MoreVerticalIcon} className="size-6" />
-                                </Button.Root>
-                            </Dropdown.Trigger>
+                        {category.isSystem ? (
+                            // System category: show toast on click, no dropdown
+                            <Button.Root
+                                $size="xs"
+                                $style="ghost"
+                                $type="neutral"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast.error("System categories cannot be modified.");
+                                }}
+                            >
+                                <Button.Icon as={MoreVerticalIcon} className="size-6" />
+                            </Button.Root>
+                        ) : (
+                            // Normal category: show dropdown with actions
+                            <Dropdown.Root>
+                                <Dropdown.Trigger asChild>
+                                    <Button.Root $size="xs" $style="ghost" $type="neutral">
+                                        <Button.Icon as={MoreVerticalIcon} className="size-6" />
+                                    </Button.Root>
+                                </Dropdown.Trigger>
 
-                            <Dropdown.Content align="end" className="w-40">
-                                {category.permissions?.canUpdate ? (
-                                    <Dropdown.Item onClick={handleUpdateClick}>
-                                        <Dropdown.ItemIcon as={Edit02Icon} />
-                                        Edit
-                                    </Dropdown.Item>
-                                ) : null}
-                                {category.permissions?.canDelete ? (
-                                    <Dropdown.Item onClick={handleDeleteClick}>
-                                        <Dropdown.ItemIcon as={Delete02Icon} />
-                                        Delete
-                                    </Dropdown.Item>
-                                ) : null}
-                            </Dropdown.Content>
-                        </Dropdown.Root>
+                                <Dropdown.Content align="end" className="w-40">
+                                    {category.permissions?.canUpdate ? (
+                                        <Dropdown.Item onClick={handleUpdateClick}>
+                                            <Dropdown.ItemIcon as={Edit02Icon} />
+                                            Edit
+                                        </Dropdown.Item>
+                                    ) : null}
+                                    {category.permissions?.canDelete ? (
+                                        <Dropdown.Item onClick={handleDeleteClick}>
+                                            <Dropdown.ItemIcon as={Delete02Icon} />
+                                            Delete
+                                        </Dropdown.Item>
+                                    ) : null}
+                                </Dropdown.Content>
+                            </Dropdown.Root>
+                        )}
                     </div>
                 </div>
 
