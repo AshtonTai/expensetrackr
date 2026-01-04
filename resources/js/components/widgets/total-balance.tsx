@@ -39,7 +39,7 @@ export function TotalBalanceWidget({ title, netWorth, netWorthSeries, className,
                 <div>
                     <div className="text-label-sm text-(--text-sub-600)">{title}</div>
                     <div className="mt-1 flex items-center gap-2">
-                        <div className="text-h5 text-(--text-strong-950)">
+                        <div className="text-h6 text-(--text-strong-950)">
                             {currencyFormatter({
                                 amount: netWorth,
                                 currency: "USD",

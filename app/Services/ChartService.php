@@ -46,54 +46,45 @@ final class ChartService
             $query
         );
 
-        // Only inject current balance if the series is empty or last balance is 0
+        $today = now()->startOfDay()->toDateString();
         $lastBalance = $balances->last();
-        $shouldInjectCurrentBalance = $balances->isEmpty() ||
-            ($lastBalance && bccomp($lastBalance->balance, '0.0000', 4) === 0);
 
-        if ($shouldInjectCurrentBalance) {
-            // Get the current balance for all accounts in the query
-            $currentBalances = $query->get()->mapWithKeys(function ($account) {
-                /** @var numeric-string $currentBalance */
-                $currentBalance = $account->current_balance;
-                $balance = bcadd($currentBalance, '0', 4);
-                $cashBalance = $account->type->isAsset()
-                    ? bcadd($currentBalance, '0', 4)
-                    : bcmul($currentBalance, '-1', 4);
+        // Always ensure the last point reflects real-time balance if it's for today
+        if ($lastBalance && $lastBalance->date === $today) {
+            // Remove the stale "today" point
+            $balances = $balances->slice(0, -1);
+        }
 
-                return [$account->id => [
-                    'balance' => $balance,
-                    'cash_balance' => $cashBalance,
-                    'holdings_balance' => '0.0000',
-                ]];
-            });
+        // Now recompute and append real-time today balance
+        $currentBalances = $query->get()->mapWithKeys(function ($account) {
+            $currentBalance = (string) $account->current_balance;
+            $balance = bcadd($currentBalance, '0', 4);
+            $cashBalance = $account->type->isAsset()
+                ? bcadd($currentBalance, '0', 4)
+                : bcmul($currentBalance, '-1', 4);
 
-            // Create a current balance object with proper decimal handling
-            $totalBalance = '0.0000';
-            $totalCashBalance = '0.0000';
+            return [$account->id => [
+                'balance' => $balance,
+                'cash_balance' => $cashBalance,
+                'holdings_balance' => '0.0000',
+            ]];
+        });
 
-            foreach ($currentBalances as $balance) {
-                /** @var numeric-string */
-                $numericBalance = $balance['balance'];
-                /** @var numeric-string */
-                $numericCashBalance = $balance['cash_balance'];
+        $totalBalance = '0.0000';
+        $totalCashBalance = '0.0000';
 
-                $totalBalance = bcadd(
-                    $totalBalance,
-                    $numericBalance,
-                    4
-                );
-                $totalCashBalance = bcadd(
-                    $totalCashBalance,
-                    $numericCashBalance,
-                    4
-                );
-            }
+        foreach ($currentBalances as $balance) {
+            $totalBalance = bcadd($totalBalance, $balance['balance'], 4);
+            $totalCashBalance = bcadd($totalCashBalance, $balance['cash_balance'], 4);
+        }
 
-            // Only add if the current balance is not zero
-            if (bccomp($totalBalance, '0.0000', 4) !== 0) {
+    // Append today's real-time balance UNCONDITIONALLY if in period
+    // But only if today is within or at the end of the requested period
+        $periodEnd = $period->endDate->startOfDay()->toDateString();
+        if ($today >= $period->startDate->toDateString() && $today <= $periodEnd) {
+            if (bccomp($totalBalance, '0.0000', 4) !== 0 || $balances->isEmpty()) {
                 $balances->push(new ChartBalanceData(
-                    now()->startOfDay()->toDateString(),
+                    $today,
                     $totalBalance,
                     $totalCashBalance,
                     '0.0000'
